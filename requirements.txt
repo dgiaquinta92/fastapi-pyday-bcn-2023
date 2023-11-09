@@ -2,3 +2,4 @@ fastapi[all]
 urllib3
 starlette
 paramiko
+pandas
