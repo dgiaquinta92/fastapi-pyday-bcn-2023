@@ -46,7 +46,7 @@ description = "API de Prueba"
 app = FastAPI(title="API - PyDay2023", version="1.0", 
               description = description, openapi_tags=tags_metadata)
 
-app.include_router(router_v1.router, prefix="/api/v1")
+app.include_router(routers_v1.router, prefix="/api/v1")
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], 
                    allow_credentials=True, allow_methods=["*"], 
