@@ -8,3 +8,4 @@ passlib
 jwt
 urllib3
 PyJWT
+toml
