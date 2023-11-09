@@ -8,7 +8,7 @@ from fastapi import Depends, HTTPException, status
 import sqlite3
 from starlette.status import HTTP_403_FORBIDDEN
 import json
-import modelos.modelos as md
+import models.models as md
 
 SECRET_KEY = "fca9f70fc9713c56316dba657364f8980be3aba009dac436a5a3fcc319b08c40"
 ALGORITHM = "HS256"
