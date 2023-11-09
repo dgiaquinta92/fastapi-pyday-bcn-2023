@@ -5,3 +5,5 @@ paramiko
 pandas
 requests
 passlib
+jwt
+urllib3
