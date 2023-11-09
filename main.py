@@ -208,5 +208,14 @@ async def get_users(response: Response, credentials: HTTPBasicCredentials = Depe
 
 
 
+@app.get("/wordcloud", response_class=HTMLResponse, tags=["HTML"])
+async def html_response():
+    html_file_path = "content/wordcloud.html"
+    # Abre el html y lo guarda en html_content
+    with open(html_file_path, "r") as html_file:
+        html_content = html_file.read()
+    return HTMLResponse(content=html_content, status_code=200)
+
+
 #if __name__ == "__main__":
 #    uvicorn.run(app, host="0.0.0.0", port=8000)
