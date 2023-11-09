@@ -1,5 +1,4 @@
 fastapi[all]
-io
 urllib3
 starlette
 paramiko
