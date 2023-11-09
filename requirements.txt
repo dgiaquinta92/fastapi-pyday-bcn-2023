@@ -4,3 +4,4 @@ starlette
 paramiko
 pandas
 requests
+passlib
