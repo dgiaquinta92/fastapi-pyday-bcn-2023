@@ -1,2 +1,5 @@
 fastapi[all]
-selenium
+io
+urllib3
+starlette
+paramiko
