@@ -9,4 +9,4 @@ jwt
 urllib3
 PyJWT
 toml
-ruamel
+ruamel.yaml
