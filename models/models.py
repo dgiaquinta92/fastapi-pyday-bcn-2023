@@ -20,6 +20,11 @@ class Names(str, Enum):
     DAVID = "David"
 
 
+class wordcloud(BaseModel):
+    username: str
+    trabajo: str
+
+
 
 class UserApi(BaseModel):
     username: str
