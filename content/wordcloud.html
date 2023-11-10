@@ -201,7 +201,7 @@ body {
    <body>
 
     <div class="login-box">
-        <h2>Login</h2>
+        <h2>Cuenta tu experiencia</h2>
         <form id="loginForm">
             <div class="user-box">
                 <input type="text" name="Nombre" required>
@@ -209,7 +209,7 @@ body {
             </div>
             <div class="user-box">
                 <input type="text" name="Trabajo" required>
-                <label>Trabajo</label>
+                <label>Puesto de IT desempeñado</label>
                 <!-- Elemento para mostrar el mensaje -->
                 <div id="successMessage" class="alert" style="display: none;">
                     <span class="closebtn" onclick="closeMessage()">&times;</span>
@@ -245,7 +245,7 @@ body {
                     };
     
                     // Realizar solicitud POST con fetch API
-                    fetch('http://localhost:8000/wordcloud_post', {
+                    fetch('https://fastapi-door.onrender.com/wordcloud_post', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
