@@ -234,7 +234,7 @@ async def wordcloud_post(user_info: md.wordcloud):
     try:
         # Abrir o crear un archivo para guardar los datos
         with open("user_info.csv", "a") as file:
-            file.write(f"{user_info.username},{user_info.trabajo};\n")
+            file.write(f"{user_info.username},{user_info.trabajo}\n")
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al guardar los datos: {str(e)}")
