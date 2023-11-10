@@ -14,8 +14,16 @@ urllib3.disable_warnings()
 from security import security
 from procedures import procedures
 from models import models as md
-from routers import routers_v1
+from routers import router_v1
 from logs import logs_middleware
+
+from wordcloud import WordCloud
+from wordcloud import ImageColorGenerator
+from matplotlib.colors import ListedColormap
+import matplotlib.pyplot as plt
+import numpy as np
+from PIL import Image
+
 
 
 app = FastAPI()
@@ -46,7 +54,7 @@ description = "API de Prueba"
 app = FastAPI(title="API - PyDay2023", version="1.0", 
               description = description, openapi_tags=tags_metadata)
 
-app.include_router(routers_v1.router, prefix="/api/v1")
+app.include_router(router_v1.router, prefix="/api/v1")
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], 
                    allow_credentials=True, allow_methods=["*"], 
@@ -130,13 +138,13 @@ async def error_response(name: str):
 
 
 @app.get("/html_response", response_class=HTMLResponse, tags=["HTML"])
-async def html_response(name: md.Names):
+async def html_response(name: str):
 
     html_file_path = "content/template.html"
     # Abre el html y lo guarda en html_content
     with open(html_file_path, "r") as html_file:
         html_content = html_file.read()
-    html_content = html_content.format(name=name.value)
+    html_content = html_content.format(name=name)
     return HTMLResponse(content=html_content, status_code=200)
 
 
@@ -208,13 +216,82 @@ async def get_users(response: Response, credentials: HTTPBasicCredentials = Depe
 
 
 
-@app.get("/wordcloud", response_class=HTMLResponse, tags=["HTML"])
-async def html_response():
+@app.get("/wordcloud_form", response_class=HTMLResponse, tags=["WORDCLOUD"])
+async def wordcloud_form():
+
     html_file_path = "content/wordcloud.html"
     # Abre el html y lo guarda en html_content
     with open(html_file_path, "r") as html_file:
         html_content = html_file.read()
     return HTMLResponse(content=html_content, status_code=200)
+
+
+
+
+
+@app.post("/wordcloud_post", tags=["WORDCLOUD"])
+async def wordcloud_post(user_info: md.wordcloud):
+    try:
+        # Abrir o crear un archivo para guardar los datos
+        with open("user_info.csv", "a") as file:
+            file.write(f"{user_info.username},{user_info.trabajo};\n")
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al guardar los datos: {str(e)}")
+
+    return {"resutl" : "Palabra agregada"}
+
+
+@app.get("/wordcloud_image", tags=["WORDCLOUD"])
+async def wordcloud_image():
+    try:
+        # Abrir o crear un archivo para guardar los datos
+        df = pd.read_csv('user_info.csv', header=None, names=['col1', 'col2'])
+        text_column = df.iloc[:, 1]
+        text = ' '.join(text_column.astype(str))
+        print(text)
+        logo_mask = np.array(Image.open('content/python2.png'))
+        custom_colors = [(0, 0, 0), (255, 223, 0), (0, 114, 189)]
+        custom_cmap = ListedColormap(custom_colors, name='custom_cmap')
+        colors = ImageColorGenerator(logo_mask)
+        wordcloud = WordCloud(width=1920, color_func=colors, collocations=False, mask = logo_mask, height=1080, max_font_size=90, background_color='white').generate(text)
+
+
+        # Muestra el WordCloud usando matplotlib
+        img_bytes = io.BytesIO()
+        plt.figure(figsize=(20, 16))
+        plt.imshow(wordcloud)
+        plt.axis('off')
+        plt.savefig(img_bytes, format='png')
+        plt.close()
+        img_bytes.seek(0)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al guardar los datos: {str(e)}")
+
+    
+    return StreamingResponse(io.BytesIO(img_bytes.read()), media_type="image/png")
+
+
+
+@app.get("/wordcloud_stadistics", tags=["WORDCLOUD"])
+async def wordcloud_stadistics():
+    try:
+        # Abrir o crear un archivo para guardar los datos
+        df = pd.read_csv('user_info.csv', header=None, names=['username', 'trabajo'])
+        
+        total_elements = len(df)
+
+        grouped_data = df.groupby('username')['trabajo'].apply(list).to_dict()
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al guardar los datos: {str(e)}")
+
+    return {
+        "total_elements": total_elements,
+        "grouped_data": grouped_data
+    }
+
 
 
 #if __name__ == "__main__":
