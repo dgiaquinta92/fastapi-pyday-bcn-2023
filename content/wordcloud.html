@@ -70,7 +70,7 @@ body {
 }
 
 .login-box form a {
-  position: relative;
+  position: center;
   display: inline-block;
   padding: 10px 20px;
   color: #03e9f4;
@@ -86,15 +86,13 @@ body {
 .login-box a:hover {
   background: #03e9f4;
   color: #fff;
-  border-radius: 5px;
+  border-radius: 1px;
   box-shadow: 0 0 5px #03e9f4,
-              0 0 25px #03e9f4,
-              0 0 50px #03e9f4,
-              0 0 100px #03e9f4;
+              0 0 25px #03e9f4;
 }
 
 .login-box a span {
-  position: absolute;
+  position: center;
   display: block;
 }
 
@@ -103,7 +101,7 @@ body {
   left: -100%;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #03e9f4);
+  background: linear-gradient(30deg, transparent, #03e9f4);
   animation: btn-anim1 1s linear infinite;
 }
 
@@ -172,29 +170,141 @@ body {
     bottom: 100%;
   }
 }
+
+
+/* The alert message box */
+.alert {
+  padding: 20px;
+  background-color: #04AA6D; /* Red */
+  color: white;
+  margin-bottom: 15px;
+}
+
+/* The close button */
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
+}
       </style>
    </head>
    <body>
 
     <div class="login-box">
         <h2>Login</h2>
-        <form>
-          <div class="user-box">
-            <input type="text" name="" required="">
-            <label>Username</label>
-          </div>
-          <div class="user-box">
-            <input type="password" name="" required="">
-            <label>Password</label>
-          </div>
-          <a href="#">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            Submit
-          </a>
+        <form id="loginForm">
+            <div class="user-box">
+                <input type="text" name="Nombre" required>
+                <label>Nombre</label>
+            </div>
+            <div class="user-box">
+                <input type="text" name="Trabajo" required>
+                <label>Trabajo</label>
+                <!-- Elemento para mostrar el mensaje -->
+                <div id="successMessage" class="alert" style="display: none;">
+                    <span class="closebtn" onclick="closeMessage()">&times;</span>
+                    Palabra agregada exitosamente
+                </div>
+                <!-- Elemento para mostrar la lista de palabras -->
+                <ul id="wordList" style="color: white;"></ul>
+            </div>
+            <a href="#" onclick="submitForm()">Submit</a>
         </form>
-      </div>
+    
+        <script>
+            // Conjunto para almacenar palabras únicas
+            var uniqueWords = new Set();
+    
+            function submitForm() {
+                var form = document.getElementById("loginForm");
+                var username = form.elements["Nombre"].value;
+                var trabajo = form.elements["Trabajo"].value;
+    
+                // Verificar que se hayan ingresado valores
+                if (username && trabajo) {
+                    // Verificar si la palabra ya está en la lista
+                    if (uniqueWords.has(trabajo)) {
+                        showMessage('La palabra ya ha sido agregada.');
+                        return;
+                    }
+    
+                    // Crear objeto JSON con los datos del formulario
+                    var data = {
+                        username: username,
+                        trabajo: trabajo
+                    };
+    
+                    // Realizar solicitud POST con fetch API
+                    fetch('http://localhost:8000/wordcloud_post', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                        // Mostrar el mensaje "Palabra agregada"
+                        showMessage('Palabra agregada exitosamente');
+    
+                        // Agregar la palabra a la lista y al conjunto
+                        var wordList = document.getElementById("wordList");
+                        var listItem = document.createElement("li");
+                        listItem.appendChild(document.createTextNode(trabajo));
+                        wordList.appendChild(listItem);
+                        uniqueWords.add(trabajo);
+    
+                        // Redirigir a la página deseada después de procesar los datos
+                        //window.location.replace("http://localhost:8000/html_response?name=" + username);
+                    })
+                    .catch(error => {
+                        // Manejar errores en la solicitud
+                        console.error('Error en la solicitud:', error);
+                        showMessage('Error en la solicitud. Por favor, inténtelo de nuevo.');
+                    });
+                } else {
+                    showMessage('Por favor, ingrese todos los datos');
+                }
+            }
+    
+            function showMessage(message) {
+                var successMessage = document.getElementById("successMessage");
+                var closeBtn = successMessage.querySelector(".closebtn");
+    
+                // Configurar el mensaje
+                successMessage.innerHTML = `<span class="closebtn" onclick="closeMessage()">&times;</span><strong></strong> ${message}`;
+    
+                // Mostrar el mensaje
+                successMessage.style.display = "block";
+    
+                // Configurar el temporizador para cerrar automáticamente después de 5 segundos
+                setTimeout(function() {
+                    closeMessage();
+                }, 10000);
+    
+                // Enlazar la función de cierre al botón de cierre
+                closeBtn.onclick = function() {
+                    closeMessage();
+                };
+            }
+    
+            function closeMessage() {
+                var successMessage = document.getElementById("successMessage");
+                successMessage.style.display = "none";
+            }
+        </script>
+    </div>
+
+
    </body>
 </html>
