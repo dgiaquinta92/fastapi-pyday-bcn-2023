@@ -10,3 +10,7 @@ urllib3
 PyJWT
 toml
 ruamel.yaml
+wordcloud
+matplotlib
+numpy
+Pillow
